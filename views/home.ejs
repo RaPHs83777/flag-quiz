@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <h1 id="nome"></h1>
+        <p id="capital"></p>
+        <img id="flag" src="" alt="">
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        // Raphael
+        let socket = io('http://192.168.0.10:80')
+        // Vinicius
+        // let socket = io('http://192.168.0.51:80')
+
+        socket.on('ServerConnection', msg=>{
+            console.log(msg)
+        })
+
+        socket.emit('flags', 'manda ae')
+        socket.on('flags', (msg)=>{
+            $('#nome').text(`${msg.name.common} (${msg.name.official})`)
+            $('#capital').text(msg.capital)
+            $('#flag').attr('src', msg.flags.png)
+            $('#flag').attr('alt', msg.flags.alt)
+            console.log(msg)
+        })
+        
+    </script>
+</html>
