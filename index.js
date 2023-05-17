@@ -6,6 +6,7 @@ const io = require('socket.io')(http)
 // const fetch = require('node-fetch')
 const fetch = (...args) => import('node-fetch').then(({default: fetch}) => fetch(...args));
 
+const urls = require('./urls')
 
 const port = 80, ipv4 = '192.168.0.10'
 
@@ -27,7 +28,12 @@ app.use(bodyParser.json())
 app.set('view engine', 'ejs')
 
 app.use(async(req, res, next)=>{
-    next()
+    let session = req.cookies.session
+    if(session != undefined || urls.liberadas.includes(req.url)){
+        next()
+    }else{
+        res.redirect('/login')
+    }
 })
 
 

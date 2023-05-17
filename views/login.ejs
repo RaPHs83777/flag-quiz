@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+        <h1 id="">Login</h1>
+        <form action="" method="post">
+            <input type="text" placeholder="Login"><br>
+            <input type="password" name="" id="" placeholder="Senha"><br>
+            <button type="submit">Logar</button>
+        </form>
+    </body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        let socket = io('http://192.168.0.10:80')
+
+        socket.on('ServerConnection', msg=>{
+            console.log(msg)
+        })
+    </script>
+</html>
