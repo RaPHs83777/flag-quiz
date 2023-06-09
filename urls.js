@@ -4,8 +4,10 @@ let urls = {
         '/login',
         '/cadastrarse',
         '/sair',
-        'verificarlogin',
-        'verificarcadastro'
+        '/verificarlogin',
+        '/verificarcadastro',
+        '/cadastrar',
+        '/teste'
     ]
 }
 
