@@ -13,6 +13,8 @@
         }
     </style>
     <body>
+        <a href="/sair">Sair</a><br>
+        <a href="/perfil">Perfil</a>
         <h1 id="nome"></h1>
         <p id="capital"></p>
         <img id="flag" src="" alt="">
@@ -32,11 +34,11 @@
 
         socket.emit('flags', 'manda ae')
         socket.on('flags', (msg)=>{
+            console.log(msg)
             $('#nome').text(`${msg.name.common} (${msg.name.official})`)
             $('#capital').text(msg.capital)
             $('#flag').attr('src', msg.flags.png)
             $('#flag').attr('alt', msg.flags.alt)
-            console.log(msg)
         })
         
     </script>

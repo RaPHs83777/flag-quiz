@@ -1,6 +1,6 @@
 let urls = {
     liberadas: [
-        '/',
+        '/1',
         '/login',
         '/cadastrarse',
         '/sair',

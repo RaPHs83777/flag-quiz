@@ -14,6 +14,8 @@ const apiAll = 'https://restcountries.com/v3.1/all'
 
 // DB
 const Users = require('./models/User')
+const Session = require('./models/Session')
+const Sequelize = require('sequelize')
 
 const bcrypt = require('bcrypt')
 
@@ -24,7 +26,7 @@ app.use(cookieParser())
 const bodyParser = require('body-parser')
 
 const routes = require('./routes');
-const { match } = require('assert');
+
 
 app.use(express.static(__dirname + '/public'))
 
@@ -34,7 +36,14 @@ app.use(bodyParser.json())
 app.set('view engine', 'ejs')
 
 app.use(async(req, res, next)=>{
-    let session = req.cookies.session
+    let sessionId = req.cookies.session
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAA: ', sessionId)
+    let session = sessionId // undefined
+    // if(sessionId){
+    //     session = await Session.findOne({where: {SessionId: sessionId}})
+    // }else{
+    //     res.redirect('/login')
+    // }
     if(session != undefined || urls.liberadas.includes(req.url)){
         next()
     }else{
@@ -42,6 +51,16 @@ app.use(async(req, res, next)=>{
     }
 })
 
+function gerarCodigoSession(){
+    let codigo = ''
+    let caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789@$#'
+
+    for(let i = 0; i < 8; i++){
+        let indice = Math.floor(Math.random() * caracteres.length)
+        codigo += caracteres.charAt(indice)
+    }
+    return codigo
+}
 
 async function encriptarSenha(senha){
     try{
@@ -70,6 +89,10 @@ async function verificarSenha(senha, dbSenha){
 
 // gets
 app.get('/', (req, res)=>{
+    res.redirect('/home')
+})
+
+app.get('/home', (req, res)=>{
     res.render('home')
 })
 
@@ -81,10 +104,48 @@ app.get('/cadastrar', (req, res)=>{
     res.render('cadastrarse')
 })
 
+app.get('/')
+
 app.get('/teste', (req, res)=>{
     encriptarSenha('123').then(hash=>{
         console.log(hash)
     })
+})
+
+app.get('/perfil', async (req, res)=>{
+    let sessionId = req.cookies.session
+    
+    let session = await Session.findOne({
+        attributes: ['UserId'],
+        where: {
+            SessionId: sessionId
+        }
+    })
+    
+    let user = await Users.findOne({
+        where: {
+            Id: session.UserId
+        }
+    })
+
+    res.render('perfil', {User: user})
+})
+
+app.get('/sair', async (req, res)=>{
+    let session = req.cookies.session
+    Session.destroy({
+        where: {
+            SessionId: session
+        }
+    }).then(numRowsDeleted => {
+        console.log(`${numRowsDeleted} Linhas Deletadas`)
+    }).catch(err=>{
+        console.error('Deu erro: ', err)
+    })
+    Object.keys(req.cookies).forEach((cookie)=>{
+        res.clearCookie(cookie)
+    })
+    res.redirect('/')
 })
 
 // posts
@@ -97,6 +158,17 @@ app.post('/verificarlogin', async (req, res)=>{
         verificarSenha(senha, user.Senha).then(match => {
             if(match){
                 console.log('Senha tá igual po')
+                let codigoSession = gerarCodigoSession()
+                let session = Session.findOne({Where: {SessionId: codigoSession}})
+                if(!session){
+                    return
+                }
+                res.cookie('session', codigoSession, {httpOnly: true})
+                Session.create({
+                    UserId: user.Id,
+                    SessionId: codigoSession
+                })
+                res.redirect('/')
             }else{
                 res.redirect('/login')
             }
@@ -130,9 +202,6 @@ app.post('/verificarcadastro', async (req, res)=>{
                     throw err
                 }
             })
-            
-            
-            
         }
     }
 })
@@ -153,8 +222,6 @@ io.on('connection', socket => {
         })
     })
 })
-
-
 
 http.listen(port, ipv4, ()=>{
     console.log(`Servidor iniciado: http://${ipv4}:${port}`)

@@ -1,9 +1,9 @@
 const Sequelize = require('sequelize')
 const db = require('./db')
 
-const Session = db.define('Session', {
+const Session = db.define('session', {
     Id:{
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true
@@ -17,3 +17,7 @@ const Session = db.define('Session', {
         allowNull: false
     }
 })
+
+// Session.sync()
+
+module.exports = Session
