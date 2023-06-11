@@ -37,7 +37,6 @@ app.set('view engine', 'ejs')
 
 app.use(async(req, res, next)=>{
     let sessionId = req.cookies.session
-    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAAA: ', sessionId)
     let session = sessionId // undefined
     // if(sessionId){
     //     session = await Session.findOne({where: {SessionId: sessionId}})
